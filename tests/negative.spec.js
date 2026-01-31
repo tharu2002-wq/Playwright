@@ -1,7 +1,7 @@
 const { test, expect } = require("@playwright/test");
 const {
   BASE_URL,
-  OUTPUT_LOCATOR,
+  OUTPUT_SELECTOR,
   OUTPUT_TIMEOUT_MS,
   LONG_INPUT_TEST_TIMEOUT_MS,
   typeSinglishAndFlush,
@@ -87,13 +87,13 @@ for (const tc of NEGATIVE_TEST_CASES) {
     }
 
     await page.goto(BASE_URL);
-    await typeSinglishAndFlush(page, tc.input);
-
-    const outputBox = page.locator(OUTPUT_LOCATOR);
-    await outputBox.waitFor({ timeout: OUTPUT_TIMEOUT_MS });
+    
+    const outputBox = await typeSinglishAndFlush(page, tc.input);
 
     const output = (await outputBox.textContent())?.trim();
 
     expect(output).not.toBe(tc.correctExpected.trim());
   });
 }
+
+

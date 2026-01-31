@@ -1,7 +1,6 @@
 const { test, expect } = require("@playwright/test");
 const {
   BASE_URL,
-  OUTPUT_LOCATOR,
   OUTPUT_TIMEOUT_MS,
   LONG_INPUT_TEST_TIMEOUT_MS,
   typeSinglishAndFlush,
@@ -19,10 +18,8 @@ const POSITIVE_TEST_CASES = [
     id: "Pos_Fun_0002",
     name: "Long mixed-language input with slang + typo causes incorrect conversion",
     size: "M",
-    input:
-      "machan mata adha meeting ekee Zoom link eka email ekak vidhihata evanna puLuvandha? Please send it before 3pm. Mama office yanna kalin check karanna oonea. Email ekak evanna amaarunam WhatsApp msg ekak dhaapan. Thx!",
-    expected:
-      "මචන් මට අද meeting එකේ Zoom link එක email එකක් විදිහට එවන්න පුළුවන්ද? Please send it before 3pm. මම office යන්න කලින් check කරන්න ඕනේ. Email එකක් එවන්න අමාරුනම් WhatsApp ම්ස්ග් එකක් දාපන්. ථx!",
+    input: "machan mata adha meeting ekee Zoom link eka email ekak vidhihata evanna puLuvandha? Please send it before 3pm. Mama office yanna kalin check karanna oonea. Email ekak evanna amaarunam WhatsApp msg ekak dhaapan. Thx!",
+    expected: "මචන් මට අද meeting එකේ Zoom link එක email එකක් විදිහට එවන්න පුළුවන්ද? Please send it before 3pm. මම office යන්න කලින් check කරන්න ඕනේ. Email එකක් එවන්න අමාරුනම් WhatsApp ම්ස්ග් එකක් දාපන්. ථx!",
   },
   {
     id: "Pos_Fun_0003",
@@ -175,8 +172,8 @@ const POSITIVE_TEST_CASES = [
     id: "Pos_Fun_0024",
     name: "Technical term",
     size: "S",
-    input: "WiFi eka  sakkriya  karanna",
-    expected: "WiFi එක  සක්ක්‍රිය  කරන්න",
+    input: "WiFi eka sakkriya karanna",
+    expected: "WiFi එක සක්ක්‍රිය කරන්න",
   },
 ];
 
@@ -185,19 +182,13 @@ for (const tc of POSITIVE_TEST_CASES) {
     if (tc.size === "M") {
       test.setTimeout(LONG_INPUT_TEST_TIMEOUT_MS);
     }
+
     await page.goto(BASE_URL);
-    await typeSinglishAndFlush(page, tc.input);
+    
+    const outputBox = await typeSinglishAndFlush(page, tc.input);
 
-    if (tc.size === "M") {
-      await page.waitForTimeout(1500);
-    }
-
-    const outputBox = page.locator(OUTPUT_LOCATOR);
     await expect(outputBox).toContainText(tc.expected.trim(), {
-      timeout: OUTPUT_TIMEOUT_MS,
+      timeout: 5000,
     });
-
-    const output = await outputBox.textContent();
-    expect(output).toContain(tc.expected.trim());
   });
 }
